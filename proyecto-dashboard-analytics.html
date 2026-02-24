@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analytics | Business Intelligence</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #42b883 0%, #35495e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .vue-green {
+            color: #42b883;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chart-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tooltip {
+            position: absolute;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(66, 184, 131, 0.3);
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            z-index: 1000;
+        }
+
+        .metric-card {
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -15px rgba(66, 184, 131, 0.2);
+        }
+
+        .live-indicator {
+            animation: pulse-live 2s infinite;
+        }
+
+        @keyframes pulse-live {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .progress-bar {
+            transition: width 1s ease;
+        }
+
+        .data-row {
+            transition: all 0.3s;
+        }
+
+        .data-row:hover {
+            background: rgba(66, 184, 131, 0.1);
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, -20px) scale(1.1); }
+        }
+
+        .axis text {
+            fill: #666;
+            font-size: 11px;
+        }
+
+        .axis path,
+        .axis line {
+            stroke: #333;
+        }
+
+        .grid line {
+            stroke: #222;
+            stroke-dasharray: 3,3;
+        }
+
+        .brush .selection {
+            fill: rgba(66, 184, 131, 0.3);
+            stroke: #42b883;
+        }
+
+        .kpi-trend-up {
+            color: #42b883;
+        }
+
+        .kpi-trend-down {
+            color: #ef4444;
+        }
+
+        .sidebar-item {
+            transition: all 0.3s;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: rgba(66, 184, 131, 0.1);
+            border-right: 3px solid #42b883;
+        }
+
+        .realtime-dot {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .heatmap-cell {
+            transition: all 0.3s;
+        }
+
+        .heatmap-cell:hover {
+            stroke: #fff;
+            stroke-width: 2;
+        }
+    </style>
+</head>
+<body class="relative">
+
+    <!-- Background Effects -->
+    <div class="blob bg-green-500 w-96 h-96 rounded-full top-0 right-0 -translate-y-1/2 translate-x-1/2"></div>
+    <div class="blob bg-blue-500 w-96 h-96 rounded-full bottom-0 left-0 translate-y-1/2 -translate-x-1/2 animation-delay-2000"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass border-b border-white/5 top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-700 flex items-center justify-center">
+                        <i data-lucide="bar-chart-3" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <span class="font-display font-bold text-xl">Analytics</span>
+                        <span class="font-display font-bold text-xl vue-green">Pro</span>
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex items-center gap-6">
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20">
+                        <span class="w-2 h-2 rounded-full bg-green-500 live-indicator"></span>
+                        <span class="text-green-400 text-sm">En vivo</span>
+                    </div>
+                    <a href="#features" class="text-gray-400 hover:text-white transition-colors text-sm">Features</a>
+                    <a href="#demo" class="text-gray-400 hover:text-white transition-colors text-sm">Demo</a>
+                    <a href="#tech" class="text-gray-400 hover:text-white transition-colors text-sm">Stack</a>
+                    <a href="index.html" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        <span class="text-sm">Volver</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center pt-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 mb-6">
+                    <i data-lucide="zap" class="w-4 h-4 text-green-400"></i>
+                    <span class="text-green-400 text-sm font-medium">Actualización en tiempo real</span>
+                </div>
+                
+                <h1 class="font-display text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                    Business <br>
+                    <span class="gradient-text">Intelligence</span> <br>
+                    Real-time
+                </h1>
+                
+                <p class="text-gray-400 text-xl mb-8 leading-relaxed max-w-lg">
+                    Dashboard empresarial con visualización de datos en tiempo real. 
+                    Métricas, análisis predictivo y reportes automatizados en una sola plataforma.
+                </p>
+                
+                <div class="flex flex-wrap gap-4 mb-12">
+                    <a href="#demo" class="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full font-bold text-white hover:shadow-lg hover:shadow-green-500/25 transition-all flex items-center gap-2">
+                        <span>Ver dashboard demo</span>
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    </a>
+                    <a href="https://github.com/tu-usuario/dashboard-analytics" target="_blank" class="px-8 py-4 glass rounded-full font-bold hover:bg-white/10 transition-all border border-white/20 flex items-center gap-2">
+                        <i data-lucide="github" class="w-5 h-5"></i>
+                        <span>Código fuente</span>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6">
+                    <div>
+                        <div class="text-3xl font-bold vue-green">50+</div>
+                        <div class="text-sm text-gray-500">Tipos de gráficos</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold vue-green">&lt;100ms</div>
+                        <div class="text-sm text-gray-500">Latencia actualización</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold vue-green">1M+</div>
+                        <div class="text-sm text-gray-500">Datos procesados/día</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Preview -->
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-3xl blur-3xl"></div>
+                <div class="relative glass rounded-2xl p-4 border border-white/10">
+                    <!-- Mock Dashboard Header -->
+                    <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">analytics.dashboard</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-400">Última actualización: ahora</span>
+                            <i data-lucide="refresh-cw" class="w-4 h-4 text-green-400 animate-spin"></i>
+                        </div>
+                    </div>
+
+                    <!-- KPI Cards -->
+                    <div class="grid grid-cols-4 gap-3 mb-4">
+                        <div class="glass rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs text-gray-400">Usuarios</span>
+                                <i data-lucide="users" class="w-4 h-4 text-green-400"></i>
+                            </div>
+                            <div class="text-xl font-bold">24.5K</div>
+                            <div class="text-xs text-green-400 flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i>
+                                +12.5%
+                            </div>
+                        </div>
+                        <div class="glass rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs text-gray-400">Sesiones</span>
+                                <i data-lucide="activity" class="w-4 h-4 text-blue-400"></i>
+                            </div>
+                            <div class="text-xl font-bold">18.2K</div>
+                            <div class="text-xs text-green-400 flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i>
+                                +8.3%
+                            </div>
+                        </div>
+                        <div class="glass rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs text-gray-400">Bounce Rate</span>
+                                <i data-lucide="percent" class="w-4 h-4 text-yellow-400"></i>
+                            </div>
+                            <div class="text-xl font-bold">42.3%</div>
+                            <div class="text-xs text-red-400 flex items-center gap-1">
+                                <i data-lucide="trending-down" class="w-3 h-3"></i>
+                                -2.1%
+                            </div>
+                        </div>
+                        <div class="glass rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs text-gray-400">Duración</span>
+                                <i data-lucide="clock" class="w-4 h-4 text-purple-400"></i>
+                            </div>
+                            <div class="text-xl font-bold">4m 32s</div>
+                            <div class="text-xs text-green-400 flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i>
+                                +18s
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Area -->
+                    <div class="glass rounded-lg p-4 h-48 mb-4 relative" id="hero-chart">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium">Tráfico en tiempo real</span>
+                            <div class="flex gap-2">
+                                <span class="text-xs px-2 py-1 rounded bg-green-500/20 text-green-400">Directo</span>
+                                <span class="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-400">Orgánico</span>
+                            </div>
+                        </div>
+                        <!-- D3 Chart will be rendered here -->
+                    </div>
+
+                    <!-- Bottom Metrics -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="glass rounded-lg p-3">
+                            <div class="text-xs text-gray-400 mb-1">Page Views</div>
+                            <div class="text-lg font-bold vue-green">2.4M</div>
+                            <div class="w-full bg-white/10 rounded-full h-1 mt-2">
+                                <div class="bg-green-500 h-1 rounded-full progress-bar" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="glass rounded-lg p-3">
+                            <div class="text-xs text-gray-400 mb-1">Conversiones</div>
+                            <div class="text-lg font-bold text-blue-400">3.8%</div>
+                            <div class="w-full bg-white/10 rounded-full h-1 mt-2">
+                                <div class="bg-blue-500 h-1 rounded-full progress-bar" style="width: 38%"></div>
+                            </div>
+                        </div>
+                        <div class="glass rounded-lg p-3">
+                            <div class="text-xs text-gray-400 mb-1">Ingresos</div>
+                            <div class="text-lg font-bold text-purple-400">$48.2K</div>
+                            <div class="w-full bg-white/10 rounded-full h-1 mt-2">
+                                <div class="bg-purple-500 h-1 rounded-full progress-bar" style="width: 62%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="py-24 relative bg-black/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-green-400 text-sm uppercase tracking-widest font-medium">Características</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold mt-4">Todo lo que necesitas para<br>tomar decisiones con datos</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card glass rounded-2xl p-8 border border-white/10">
+                    <div class="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center mb-6">
+                        <i data-lucide="activity" class="w-7 h-7 text-green-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Tiempo Real</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Datos actualizados instantáneamente con Firebase. 
+                        Sin refrescar página, sin delay.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card glass rounded-2xl p-8 border border-white/10">
+                    <div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mb-6">
+                        <i data-lucide="pie-chart" class="w-7 h-7 text-blue-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Visualizaciones D3.js</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Gráficos personalizados e interactivos. 
+                        Desde líneas simples hasta heatmaps complejos.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card glass rounded-2xl p-8 border border-white/10">
+                    <div class="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center mb-6">
+                        <i data-lucide="brain" class="w-7 h-7 text-purple-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Análisis Predictivo</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Algoritmos de ML para predecir tendencias 
+                        y detectar anomalías automáticamente.
+                    </p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card glass rounded-2xl p-8 border border-white/10">
+                    <div class="w-14 h-14 rounded-xl bg-orange-500/10 flex items-center justify-center mb-6">
+                        <i data-lucide="file-text" class="w-7 h-7 text-orange-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Reportes Automáticos</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Genera y envía reportes PDF/Excel automáticamente 
+                        según tu programación.
+                    </p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card glass rounded-2xl p-8 border border-white/10">
+                    <div class="w-14 h-14 rounded-xl bg-pink-500/10 flex items-center justify-center mb-6">
+                        <i data-lucide="shield" class="w-7 h-7 text-pink-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Seguridad Enterprise</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Autenticación OAuth2, roles granularizados 
+                        y encriptación end-to-end.
+                    </p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card glass rounded-2xl p-8 border border-white/10">
+                    <div class="w-14 h-14 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-6">
+                        <i data-lucide="smartphone" class="w-7 h-7 text-cyan-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Responsive Design</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Accede desde cualquier dispositivo. 
+                        Optimizado para desktop, tablet y móvil.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Dashboard -->
+    <section id="demo" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-green-400 text-sm uppercase tracking-widest font-medium">Demo Interactiva</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold mt-4">Explora el dashboard</h2>
+                <p class="text-gray-400 mt-4">Datos actualizándose en tiempo real</p>
+            </div>
+
+            <!-- Dashboard Layout -->
+            <div class="glass rounded-3xl border border-white/10 overflow-hidden">
+                <!-- Dashboard Header -->
+                <div class="flex items-center justify-between p-6 border-b border-white/10 bg-black/20">
+                    <div class="flex items-center gap-4">
+                        <button class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="menu" class="w-5 h-5"></i>
+                        </button>
+                        <h3 class="font-bold text-lg">Overview General</h3>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5">
+                            <i data-lucide="calendar" class="w-4 h-4 text-gray-400"></i>
+                            <span class="text-sm">Últimos 7 días</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+                        </div>
+                        <button class="p-2 rounded-lg hover:bg-white/10 transition-colors relative">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                            <span class="text-xs font-bold">AD</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex">
+                    <!-- Sidebar -->
+                    <div class="w-64 border-r border-white/10 p-4 hidden lg:block">
+                        <nav class="space-y-2">
+                            <a href="#" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-lg text-sm">
+                                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-white">
+                                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                                <span>Análisis</span>
+                            </a>
+                            <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-white">
+                                <i data-lucide="users" class="w-5 h-5"></i>
+                                <span>Usuarios</span>
+                            </a>
+                            <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-white">
+                                <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                                <span>Conversiones</span>
+                            </a>
+                            <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-white">
+                                <i data-lucide="map" class="w-5 h-5"></i>
+                                <span>Geografía</span>
+                            </a>
+                            <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-white">
+                                <i data-lucide="settings" class="w-5 h-5"></i>
+                                <span>Configuración</span>
+                            </a>
+                        </nav>
+
+                        <div class="mt-8 p-4 rounded-xl bg-gradient-to-br from-green-500/10 to-blue-500/10 border border-green-500/20">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 rounded-full bg-green-500 real-time-dot"></div>
+                                <span class="text-xs text-green-400 font-medium">Pro Plan</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Actualización cada 1s</p>
+                            <button class="w-full py-2 rounded-lg bg-green-500/20 text-green-400 text-xs font-medium hover:bg-green-500/30 transition-colors">
+                                Actualizar plan
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="flex-1 p-6">
+                        <!-- KPI Grid -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="metric-card glass rounded-xl p-4 border border-white/5">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-sm text-gray-400">Total Usuarios</span>
+                                    <div class="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
+                                        <i data-lucide="users" class="w-4 h-4 text-green-400"></i>
+                                    </div>
+                                </div>
+                                <div class="text-2xl font-bold mb-1" id="kpi-users">45,231</div>
+                                <div class="flex items-center gap-1 text-xs text-green-400">
+                                    <i data-lucide="trending-up" class="w-3 h-3"></i>
+                                    <span>+12.5% vs mes pasado</span>
+                                </div>
+                            </div>
+
+                            <div class="metric-card glass rounded-xl p-4 border border-white/5">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-sm text-gray-400">Ingresos</span>
+                                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                        <i data-lucide="dollar-sign" class="w-4 h-4 text-blue-400"></i>
+                                    </div>
+                                </div>
+                                <div class="text-2xl font-bold mb-1" id="kpi-revenue">$124,592</div>
+                                <div class="flex items-center gap-1 text-xs text-green-400">
+                                    <i data-lucide="trending-up" class="w-3 h-3"></i>
+                                    <span>+8.2% vs mes pasado</span>
+                                </div>
+                            </div>
+
+                            <div class="metric-card glass rounded-xl p-4 border border-white/5">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-sm text-gray-400">Tasa Conversión</span>
+                                    <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                                        <i data-lucide="percent" class="w-4 h-4 text-purple-400"></i>
+                                    </div>
+                                </div>
+                                <div class="text-2xl font-bold mb-1" id="kpi-conversion">3.24%</div>
+                                <div class="flex items-center gap-1 text-xs text-red-400">
+                                    <i data-lucide="trending-down" class="w-3 h-3"></i>
+                                    <span>-0.4% vs mes pasado</span>
+                                </div>
+                            </div>
+
+                            <div class="metric-card glass rounded-xl p-4 border border-white/5">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-sm text-gray-400">Sesiones Activas</span>
+                                    <div class="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                                        <i data-lucide="activity" class="w-4 h-4 text-orange-400"></i>
+                                    </div>
+                                </div>
+                                <div class="text-2xl font-bold mb-1" id="kpi-sessions">1,247</div>
+                                <div class="flex items-center gap-1 text-xs text-green-400">
+                                    <i data-lucide="trending-up" class="w-3 h-3"></i>
+                                    <span>+23 en última hora</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Row -->
+                        <div class="grid lg:grid-cols-3 gap-6 mb-6">
+                            <!-- Main Chart -->
+                            <div class="lg:col-span-2 glass rounded-xl p-6 border border-white/5">
+                                <div class="flex items-center justify-between mb-6">
+                                    <div>
+                                        <h4 class="font-bold mb-1">Tráfico y Conversiones</h4>
+                                        <p class="text-xs text-gray-500">Últimos 30 días</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button class="px-3 py-1 rounded-lg bg-green-500/20 text-green-400 text-xs">Tráfico</button>
+                                        <button class="px-3 py-1 rounded-lg bg-white/5 text-gray-400 text-xs hover:bg-white/10">Conversiones</button>
+                                    </div>
+                                </div>
+                                <div id="main-chart" class="h-64"></div>
+                            </div>
+
+                            <!-- Device Breakdown -->
+                            <div class="glass rounded-xl p-6 border border-white/5">
+                                <h4 class="font-bold mb-1">Dispositivos</h4>
+                                <p class="text-xs text-gray-500 mb-6">Por tipo de dispositivo</p>
+                                <div id="device-chart" class="h-48"></div>
+                                <div class="mt-4 space-y-2">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                            <span>Desktop</span>
+                                        </div>
+                                        <span class="font-bold">58%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                                            <span>Móvil</span>
+                                        </div>
+                                        <span class="font-bold">35%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                                            <span>Tablet</span>
+                                        </div>
+                                        <span class="font-bold">7%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Row -->
+                        <div class="grid lg:grid-cols-2 gap-6">
+                            <!-- Real-time Activity -->
+                            <div class="glass rounded-xl p-6 border border-white/5">
+                                <div class="flex items-center justify-between mb-6">
+                                    <div>
+                                        <h4 class="font-bold mb-1">Actividad en Vivo</h4>
+                                        <p class="text-xs text-gray-500">Últimas acciones de usuarios</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                        <span class="text-xs text-green-400">En vivo</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-3" id="activity-feed">
+                                    <div class="data-row flex items-center justify-between p-3 rounded-lg bg-white/5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                                                <span class="text-xs text-green-400 font-bold">JD</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium">Compra completada</div>
+                                                <div class="text-xs text-gray-500">hace 2 segundos</div>
+                                            </div>
+                                        </div>
+                                        <span class="text-green-400 font-bold text-sm">+$129</span>
+                                    </div>
+                                    <div class="data-row flex items-center justify-between p-3 rounded-lg bg-white/5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                                <span class="text-xs text-blue-400 font-bold">MR</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium">Nuevo registro</div>
+                                                <div class="text-xs text-gray-500">hace 5 segundos</div>
+                                            </div>
+                                        </div>
+                                        <span class="text-blue-400 text-xs">Usuario nuevo</span>
+                                    </div>
+                                    <div class="data-row flex items-center justify-between p-3 rounded-lg bg-white/5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                                                <span class="text-xs text-purple-400 font-bold">AL</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium">Añadió al carrito</div>
+                                                <div class="text-xs text-gray-500">hace 12 segundos</div>
+                                            </div>
+                                        </div>
+                                        <span class="text-purple-400 text-xs">Producto #4521</span>
+                                    </div>
+                                    <div class="data-row flex items-center justify-between p-3 rounded-lg bg-white/5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
+                                                <span class="text-xs text-orange-400 font-bold">CK</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium">Visitó landing page</div>
+                                                <div class="text-xs text-gray-500">hace 18 segundos</div>
+                                            </div>
+                                        </div>
+                                        <span class="text-orange-400 text-xs">Orgánico</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Top Pages -->
+                            <div class="glass rounded-xl p-6 border border-white/5">
+                                <h4 class="font-bold mb-1">Páginas Populares</h4>
+                                <p class="text-xs text-gray-500 mb-6">Por vistas de página</p>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-sm">/productos/saas</span>
+                                            <span class="text-sm font-bold text-green-400">12,453</span>
+                                        </div>
+                                        <div class="w-full bg-white/10 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full progress-bar" style="width: 85%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-sm">/precios</span>
+                                            <span class="text-sm font-bold text-blue-400">8,234</span>
+                                        </div>
+                                        <div class="w-full bg-white/10 rounded-full h-2">
+                                            <div class="bg-blue-500 h-2 rounded-full progress-bar" style="width: 65%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-sm">/blog/analytics</span>
+                                            <span class="text-sm font-bold text-purple-400">6,123</span>
+                                        </div>
+                                        <div class="w-full bg-white/10 rounded-full h-2">
+                                            <div class="bg-purple-500 h-2 rounded-full progress-bar" style="width: 45%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-sm">/contacto</span>
+                                            <span class="text-sm font-bold text-orange-400">3,456</span>
+                                        </div>
+                                        <div class="w-full bg-white/10 rounded-full h-2">
+                                            <div class="bg-orange-500 h-2 rounded-full progress-bar" style="width: 25%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section id="tech" class="py-24 relative bg-black/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-green-400 text-sm uppercase tracking-widest font-medium">Stack Tecnológico</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold mt-4">Construido con las mejores tecnologías</h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Vue.js -->
+                <div class="glass rounded-2xl p-8 border border-white/10">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-700 flex items-center justify-center">
+                            <span class="text-white font-bold text-2xl">V</span>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold">Vue.js 3</h3>
+                            <p class="text-gray-500">Composition API</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            <span>Composition API</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            <span>Vuex Store</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            <span>Vue Router</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            <span>Vite Build Tool</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- D3.js -->
+                <div class="glass rounded-2xl p-8 border border-white/10">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+                            <span class="text-white font-bold text-2xl">D3</span>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold">D3.js</h3>
+                            <p class="text-gray-500">Data Visualization</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-orange-500"></i>
+                            <span>SVG & Canvas</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-orange-500"></i>
+                            <span>Transitions & Animations</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-orange-500"></i>
+                            <span>Interactive Brushing</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-orange-500"></i>
+                            <span>Custom Scales & Axes</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Firebase -->
+                <div class="glass rounded-2xl p-8 border border-white/10">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center">
+                            <i data-lucide="flame" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold">Firebase</h3>
+                            <p class="text-gray-500">Backend as a Service</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-yellow-500"></i>
+                            <span>Realtime Database</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-yellow-500"></i>
+                            <span>Authentication</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-yellow-500"></i>
+                            <span>Cloud Functions</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-yellow-500"></i>
+                            <span>Hosting & Storage</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Pipeline -->
+    <section class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">Pipeline de Datos</h2>
+                <p class="text-gray-400">Desde la fuente hasta el dashboard en milisegundos</p>
+            </div>
+
+            <div class="glass rounded-3xl p-8 border border-white/10">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                    <!-- Step 1 -->
+                    <div class="text-center flex-1">
+                        <div class="w-20 h-20 rounded-2xl bg-blue-500/20 border-2 border-blue-500 flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="database" class="w-8 h-8 text-blue-400"></i>
+                        </div>
+                        <h4 class="font-bold mb-2">Fuentes de Datos</h4>
+                        <p class="text-sm text-gray-400">Web, Apps, APIs, IoT</p>
+                    </div>
+
+                    <i data-lucide="arrow-right" class="w-8 h-8 text-gray-600 hidden md:block"></i>
+                    <i data-lucide="arrow-down" class="w-8 h-8 text-gray-600 md:hidden"></i>
+
+                    <!-- Step 2 -->
+                    <div class="text-center flex-1">
+                        <div class="w-20 h-20 rounded-2xl bg-yellow-500/20 border-2 border-yellow-500 flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="zap" class="w-8 h-8 text-yellow-400"></i>
+                        </div>
+                        <h4 class="font-bold mb-2">Firebase</h4>
+                        <p class="text-sm text-gray-400">Ingesta en tiempo real</p>
+                    </div>
+
+                    <i data-lucide="arrow-right" class="w-8 h-8 text-gray-600 hidden md:block"></i>
+                    <i data-lucide="arrow-down" class="w-8 h-8 text-gray-600 md:hidden"></i>
+
+                    <!-- Step 3 -->
+                    <div class="text-center flex-1">
+                        <div class="w-20 h-20 rounded-2xl bg-purple-500/20 border-2 border-purple-500 flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="cpu" class="w-8 h-8 text-purple-400"></i>
+                        </div>
+                        <h4 class="font-bold mb-2">Procesamiento</h4>
+                        <p class="text-sm text-gray-400">Agregación & Análisis</p>
+                    </div>
+
+                    <i data-lucide="arrow-right" class="w-8 h-8 text-gray-600 hidden md:block"></i>
+                    <i data-lucide="arrow-down" class="w-8 h-8 text-gray-600 md:hidden"></i>
+
+                    <!-- Step 4 -->
+                    <div class="text-center flex-1">
+                        <div class="w-20 h-20 rounded-2xl bg-green-500/20 border-2 border-green-500 flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="monitor" class="w-8 h-8 text-green-400"></i>
+                        </div>
+                        <h4 class="font-bold mb-2">Dashboard</h4>
+                        <p class="text-sm text-gray-400">Visualización D3.js</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        <span class="text-green-400 text-sm">Latencia promedio: 47ms</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-24 relative bg-black/30">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="font-display text-4xl md:text-5xl font-bold mb-6">¿Listo para visualizar tus datos?</h2>
+            <p class="text-gray-400 text-xl mb-8">
+                El código fuente está disponible. Implementa tu propio dashboard 
+                o úsalo como base para proyectos más grandes.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://github.com/tu-usuario/dashboard-analytics" target="_blank" class="px-8 py-4 bg-white text-black rounded-full font-bold hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="github" class="w-5 h-5"></i>
+                    <span>Ver en GitHub</span>
+                </a>
+                <a href="index.html" class="px-8 py-4 glass rounded-full font-bold hover:bg-white/10 transition-all border border-white/20 flex items-center justify-center gap-2">
+                    <i data-lucide="briefcase" class="w-5 h-5"></i>
+                    <span>Ver más proyectos</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 text-sm">
+            <p>© 2024 Dashboard Analytics. Built with Vue.js, D3.js & Firebase</p>
+        </div>
+    </footer>
+
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // ==========================================
+        // D3.js CHARTS
+        // ==========================================
+
+        // Main Line Chart
+        function createMainChart() {
+            const container = document.getElementById('main-chart');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+
+            const svg = d3.select('#main-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            // Generate sample data
+            const data = Array.from({ length: 30 }, (_, i) => ({
+                date: new Date(2024, 0, i + 1),
+                traffic: Math.floor(Math.random() * 5000) + 3000,
+                conversions: Math.floor(Math.random() * 200) + 100
+            }));
+
+            const x = d3.scaleTime()
+                .domain(d3.extent(data, d => d.date))
+                .range([margin.left, width - margin.right]);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.traffic)])
+                .range([height - margin.bottom, margin.top]);
+
+            // Grid lines
+            svg.append('g')
+                .attr('class', 'grid')
+                .attr('transform', `translate(0,${height - margin.bottom})`)
+                .call(d3.axisBottom(x).tickSize(-height + margin.top + margin.bottom).tickFormat(''));
+
+            svg.append('g')
+                .attr('class', 'grid')
+                .attr('transform', `translate(${margin.left},0)`)
+                .call(d3.axisLeft(y).tickSize(-width + margin.left + margin.right).tickFormat(''));
+
+            // Line
+            const line = d3.line()
+                .x(d => x(d.date))
+                .y(d => y(d.traffic))
+                .curve(d3.curveMonotoneX);
+
+            // Area
+            const area = d3.area()
+                .x(d => x(d.date))
+                .y0(height - margin.bottom)
+                .y1(d => y(d.traffic))
+                .curve(d3.curveMonotoneX);
+
+            // Gradient
+            const gradient = svg.append('defs')
+                .append('linearGradient')
+                .attr('id', 'area-gradient')
+                .attr('x1', '0%')
+                .attr('y1', '0%')
+                .attr('x2', '0%')
+                .attr('y2', '100%');
+
+            gradient.append('stop')
+                .attr('offset', '0%')
+                .attr('stop-color', '#42b883')
+                .attr('stop-opacity', 0.3);
+
+            gradient.append('stop')
+                .attr('offset', '100%')
+                .attr('stop-color', '#42b883')
+                .attr('stop-opacity', 0);
+
+            // Add area
+            svg.append('path')
+                .datum(data)
+                .attr('fill', 'url(#area-gradient)')
+                .attr('d', area);
+
+            // Add line
+            const path = svg.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#42b883')
+                .attr('stroke-width', 2)
+                .attr('d', line);
+
+            // Animate line
+            const totalLength = path.node().getTotalLength();
+            path.attr('stroke-dasharray', totalLength + ' ' + totalLength)
+                .attr('stroke-dashoffset', totalLength)
+                .transition()
+                .duration(2000)
+                .ease(d3.easeCubicOut)
+                .attr('stroke-dashoffset', 0);
+
+            // Axes
+            svg.append('g')
+                .attr('class', 'axis')
+                .attr('transform', `translate(0,${height - margin.bottom})`)
+                .call(d3.axisBottom(x).ticks(5).tickFormat(d3.timeFormat('%d/%m')));
+
+            svg.append('g')
+                .attr('class', 'axis')
+                .attr('transform', `translate(${margin.left},0)`)
+                .call(d3.axisLeft(y).ticks(5));
+
+            // Tooltip
+            const tooltip = d3.select('#tooltip');
+
+            // Dots
+            svg.selectAll('.dot')
+                .data(data)
+                .enter().append('circle')
+                .attr('class', 'dot')
+                .attr('cx', d => x(d.date))
+                .attr('cy', d => y(d.traffic))
+                .attr('r', 4)
+                .attr('fill', '#42b883')
+                .attr('opacity', 0)
+                .on('mouseover', function(event, d) {
+                    d3.select(this).attr('r', 6).attr('opacity', 1);
+                    tooltip.style('opacity', 1)
+                        .html(`<strong>${d3.timeFormat('%d/%m')(d.date)}</strong><br>Tráfico: ${d.traffic.toLocaleString()}`)
+                        .style('left', (event.pageX + 10) + 'px')
+                        .style('top', (event.pageY - 28) + 'px');
+                })
+                .on('mouseout', function() {
+                    d3.select(this).attr('r', 4);
+                    tooltip.style('opacity', 0);
+                })
+                .transition()
+                .delay((d, i) => i * 50)
+                .duration(500)
+                .attr('opacity', 0.7);
+        }
+
+        // Device Donut Chart
+        function createDeviceChart() {
+            const container = document.getElementById('device-chart');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const radius = Math.min(width, height) / 2;
+
+            const svg = d3.select('#device-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .append('g')
+                .attr('transform', `translate(${width / 2},${height / 2})`);
+
+            const data = [
+                { label: 'Desktop', value: 58, color: '#22c55e' },
+                { label: 'Móvil', value: 35, color: '#3b82f6' },
+                { label: 'Tablet', value: 7, color: '#a855f7' }
+            ];
+
+            const pie = d3.pie()
+                .value(d => d.value)
+                .sort(null);
+
+            const arc = d3.arc()
+                .innerRadius(radius * 0.6)
+                .outerRadius(radius);
+
+            const arcs = svg.selectAll('arc')
+                .data(pie(data))
+                .enter()
+                .append('g')
+                .attr('class', 'arc');
+
+            arcs.append('path')
+                .attr('fill', d => d.data.color)
+                .attr('d', arc)
+                .attr('opacity', 0.8)
+                .transition()
+                .duration(1000)
+                .attrTween('d', function(d) {
+                    const i = d3.interpolate(d.startAngle + 0.1, d.endAngle);
+                    return function(t) {
+                        d.endAngle = i(t);
+                        return arc(d);
+                    }
+                });
+
+            // Center text
+            svg.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dy', '-0.5em')
+                .style('font-size', '14px')
+                .style('fill', '#666')
+                .text('Total');
+
+            svg.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dy', '1em')
+                .style('font-size', '20px')
+                .style('font-weight', 'bold')
+                .style('fill', '#fff')
+                .text('100%');
+        }
+
+        // Hero Chart (simplified)
+        function createHeroChart() {
+            const container = document.getElementById('hero-chart');
+            if (!container) return;
+            
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            const svg = d3.select('#hero-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            const data = Array.from({ length: 20 }, () => Math.random() * 100);
+            
+            const x = d3.scaleLinear()
+                .domain([0, data.length - 1])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 100])
+                .range([height, 0]);
+
+            const area = d3.area()
+                .x((d, i) => x(i))
+                .y0(height)
+                .y1(d => y(d))
+                .curve(d3.curveBasis);
+
+            const gradient = svg.append('defs')
+                .append('linearGradient')
+                .attr('id', 'hero-gradient')
+                .attr('x1', '0%')
+                .attr('y1', '0%')
+                .attr('x2', '0%')
+                .attr('y2', '100%');
+
+            gradient.append('stop')
+                .attr('offset', '0%')
+                .attr('stop-color', '#00d4ff')
+                .attr('stop-opacity', 0.5);
+
+            gradient.append('stop')
+                .attr('offset', '100%')
+                .attr('stop-color', '#00d4ff')
+                .attr('stop-opacity', 0);
+
+            svg.append('path')
+                .datum(data)
+                .attr('fill', 'url(#hero-gradient)')
+                .attr('d', area);
+        }
+
+        // Initialize charts
+        window.addEventListener('load', () => {
+            createHeroChart();
+            createMainChart();
+            createDeviceChart();
+        });
+
+        // Real-time simulation
+        function simulateRealTime() {
+            // Update KPIs randomly
+            const kpiIds = ['kpi-users', 'kpi-revenue', 'kpi-conversion', 'kpi-sessions'];
+            
+            setInterval(() => {
+                const randomKpi = kpiIds[Math.floor(Math.random() * kpiIds.length)];
+                const element = document.getElementById(randomKpi);
+                if (element) {
+                    const currentValue = parseInt(element.textContent.replace(/[^0-9]/g, ''));
+                    const change = Math.floor(Math.random() * 10) - 5;
+                    const newValue = currentValue + change;
+                    
+                    if (randomKpi === 'kpi-revenue') {
+                        element.textContent = '$' + newValue.toLocaleString();
+                    } else if (randomKpi === 'kpi-conversion') {
+                        element.textContent = (3 + Math.random()).toFixed(2) + '%';
+                    } else {
+                        element.textContent = newValue.toLocaleString();
+                    }
+                }
+            }, 3000);
+
+            // Add new activity
+            setInterval(() => {
+                const activities = [
+                    { action: 'Compra completada', user: 'JD', color: 'green', value: '+$' + Math.floor(Math.random() * 200 + 50) },
+                    { action: 'Nuevo registro', user: 'MR', color: 'blue', value: 'Usuario nuevo' },
+                    { action: 'Añadió al carrito', user: 'AL', color: 'purple', value: 'Producto #' + Math.floor(Math.random() * 10000) },
+                    { action: 'Visitó pricing', user: 'CK', color: 'orange', value: 'Orgánico' }
+                ];
+
+                const activity = activities[Math.floor(Math.random() * activities.length)];
+                const feed = document.getElementById('activity-feed');
+                
+                const newItem = document.createElement('div');
+                newItem.className = 'data-row flex items-center justify-between p-3 rounded-lg bg-white/5 notification';
+                newItem.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-${activity.color}-500/20 flex items-center justify-center">
+                            <span class="text-xs text-${activity.color}-400 font-bold">${activity.user}</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium">${activity.action}</div>
+                            <div class="text-xs text-gray-500">ahora</div>
+                        </div>
+                    </div>
+                    <span class="text-${activity.color}-400 font-bold text-sm">${activity.value}</span>
+                `;
+
+                feed.insertBefore(newItem, feed.firstChild);
+                if (feed.children.length > 4) {
+                    feed.removeChild(feed.lastChild);
+                }
+            }, 5000);
+        }
+
+        simulateRealTime();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            d3.selectAll('svg').remove();
+            createHeroChart();
+            createMainChart();
+            createDeviceChart();
+        });
+    </script>
+</body>
+</html>

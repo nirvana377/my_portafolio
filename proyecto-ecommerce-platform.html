@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Platform | Tienda Online Completa</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #61dafb 0%, #00d8ff 50%, #0088cc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .react-blue {
+            color: #61dafb;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .product-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -15px rgba(97, 218, 251, 0.3);
+        }
+
+        .cart-badge {
+            animation: bounce-badge 2s infinite;
+        }
+
+        @keyframes bounce-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .checkout-step {
+            transition: all 0.3s ease;
+        }
+
+        .checkout-step.active {
+            background: rgba(97, 218, 251, 0.1);
+            border-color: #61dafb;
+        }
+
+        .payment-method {
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: #61dafb;
+            background: rgba(97, 218, 251, 0.05);
+        }
+
+        .payment-method.selected {
+            border-color: #61dafb;
+            background: rgba(97, 218, 251, 0.1);
+        }
+
+        .admin-sidebar {
+            transition: all 0.3s;
+        }
+
+        .admin-sidebar-item:hover,
+        .admin-sidebar-item.active {
+            background: rgba(97, 218, 251, 0.1);
+            border-left: 3px solid #61dafb;
+        }
+
+        .inventory-row {
+            transition: all 0.2s;
+        }
+
+        .inventory-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .stock-low {
+            color: #ef4444;
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, -20px) scale(1.1); }
+        }
+
+        .category-tab {
+            transition: all 0.3s;
+        }
+
+        .category-tab.active {
+            background: #61dafb;
+            color: #000;
+        }
+
+        .add-to-cart-btn {
+            transition: all 0.3s;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px -10px rgba(97, 218, 251, 0.5);
+        }
+
+        .order-status {
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.3);
+        }
+    </style>
+</head>
+<body class="relative">
+
+    <!-- Background Effects -->
+    <div class="blob bg-cyan-400 w-96 h-96 rounded-full top-0 left-0 -translate-y-1/2 -translate-x-1/2"></div>
+    <div class="blob bg-blue-500 w-96 h-96 rounded-full bottom-0 right-0 translate-y-1/2 translate-x-1/2 animation-delay-2000"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass border-b border-white/5 top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
+                        <i data-lucide="shopping-bag" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <span class="font-display font-bold text-xl">Shop</span>
+                        <span class="font-display font-bold text-xl react-blue">Pro</span>
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#tienda" class="text-gray-400 hover:text-white transition-colors text-sm">Tienda</a>
+                    <a href="#carrito" class="text-gray-400 hover:text-white transition-colors text-sm">Carrito</a>
+                    <a href="#admin" class="text-gray-400 hover:text-white transition-colors text-sm">Panel Admin</a>
+                    <a href="#tech" class="text-gray-400 hover:text-white transition-colors text-sm">Tecnología</a>
+                    <a href="index.html" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        <span class="text-sm">Volver</span>
+                    </a>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button class="relative p-2 hover:bg-white/10 rounded-lg transition-colors">
+                        <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                        <span id="cart-count" class="cart-badge absolute -top-1 -right-1 w-5 h-5 bg-cyan-400 text-black text-xs font-bold rounded-full flex items-center justify-center">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center pt-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-400/10 border border-cyan-400/20 mb-6">
+                    <i data-lucide="zap" class="w-4 h-4 text-cyan-400"></i>
+                    <span class="text-cyan-400 text-sm font-medium">Plataforma completa MERN</span>
+                </div>
+                
+                <h1 class="font-display text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                    E-Commerce <br>
+                    <span class="gradient-text">Profesional</span>
+                </h1>
+                
+                <p class="text-gray-400 text-xl mb-8 leading-relaxed max-w-lg">
+                    Plataforma de comercio electrónico completa con carrito, 
+                    pagos integrados, gestión de inventario y panel de administración.
+                </p>
+                
+                <div class="flex flex-wrap gap-4 mb-12">
+                    <a href="#tienda" class="px-8 py-4 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full font-bold text-white hover:shadow-lg hover:shadow-cyan-400/25 transition-all flex items-center gap-2">
+                        <span>Ver tienda demo</span>
+                        <i data-lucide="store" class="w-5 h-5"></i>
+                    </a>
+                    <a href="https://github.com/tu-usuario/ecommerce-platform" target="_blank" class="px-8 py-4 glass rounded-full font-bold hover:bg-white/10 transition-all border border-white/20 flex items-center gap-2">
+                        <i data-lucide="github" class="w-5 h-5"></i>
+                        <span>Código fuente</span>
+                    </a>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <div class="flex -space-x-3">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center border-2 border-black text-sm font-bold">R</div>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center border-2 border-black text-sm font-bold">N</div>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center border-2 border-black text-sm font-bold">M</div>
+                    </div>
+                    <div>
+                        <div class="font-bold">Stack MERN</div>
+                        <div class="text-sm text-gray-500">MongoDB + Express + React + Node</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Store Preview -->
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 rounded-3xl blur-3xl"></div>
+                <div class="relative glass rounded-2xl p-4 border border-white/10">
+                    <!-- Store Header -->
+                    <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-cyan-400 flex items-center justify-center">
+                                <i data-lucide="shopping-bag" class="w-4 h-4 text-black"></i>
+                            </div>
+                            <span class="font-bold">Mi Tienda</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="relative">
+                                <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                                <input type="text" placeholder="Buscar..." class="bg-white/5 border border-white/10 rounded-lg py-2 pl-9 pr-4 text-sm w-32 focus:outline-none focus:border-cyan-400">
+                            </div>
+                            <button class="relative p-2">
+                                <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                                <span class="absolute -top-1 -right-1 w-4 h-4 bg-cyan-400 text-black text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="flex gap-2 mb-4 overflow-x-auto">
+                        <button class="category-tab active px-4 py-2 rounded-full text-sm whitespace-nowrap">Todo</button>
+                        <button class="category-tab px-4 py-2 rounded-full bg-white/5 text-sm whitespace-nowrap text-gray-400">Electrónica</button>
+                        <button class="category-tab px-4 py-2 rounded-full bg-white/5 text-sm whitespace-nowrap text-gray-400">Ropa</button>
+                        <button class="category-tab px-4 py-2 rounded-full bg-white/5 text-sm whitespace-nowrap text-gray-400">Hogar</button>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="glass rounded-xl p-3 border border-white/5">
+                            <div class="h-24 rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center mb-3">
+                                <i data-lucide="headphones" class="w-10 h-10 text-cyan-400"></i>
+                            </div>
+                            <h4 class="font-bold text-sm mb-1">Auriculares Pro</h4>
+                            <p class="text-cyan-400 font-bold text-sm">$299</p>
+                            <button class="w-full mt-2 py-2 bg-cyan-400 text-black rounded-lg text-xs font-bold">Agregar</button>
+                        </div>
+                        <div class="glass rounded-xl p-3 border border-white/5">
+                            <div class="h-24 rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center mb-3">
+                                <i data-lucide="watch" class="w-10 h-10 text-purple-400"></i>
+                            </div>
+                            <h4 class="font-bold text-sm mb-1">Smart Watch</h4>
+                            <p class="text-cyan-400 font-bold text-sm">$199</p>
+                            <button class="w-full mt-2 py-2 bg-cyan-400 text-black rounded-lg text-xs font-bold">Agregar</button>
+                        </div>
+                        <div class="glass rounded-xl p-3 border border-white/5">
+                            <div class="h-24 rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center mb-3">
+                                <i data-lucide="camera" class="w-10 h-10 text-pink-400"></i>
+                            </div>
+                            <h4 class="font-bold text-sm mb-1">Cámara 4K</h4>
+                            <p class="text-cyan-400 font-bold text-sm">$899</p>
+                            <button class="w-full mt-2 py-2 bg-cyan-400 text-black rounded-lg text-xs font-bold">Agregar</button>
+                        </div>
+                        <div class="glass rounded-xl p-3 border border-white/5">
+                            <div class="h-24 rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center mb-3">
+                                <i data-lucide="smartphone" class="w-10 h-10 text-green-400"></i>
+                            </div>
+                            <h4 class="font-bold text-sm mb-1">Phone 15</h4>
+                            <p class="text-cyan-400 font-bold text-sm">$999</p>
+                            <button class="w-full mt-2 py-2 bg-cyan-400 text-black rounded-lg text-xs font-bold">Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-24 relative bg-black/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-cyan-400 text-sm uppercase tracking-widest font-medium">Características</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold mt-4">Todo lo que necesitas para vender online</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass rounded-2xl p-6 border border-white/10">
+                    <div class="w-12 h-12 rounded-xl bg-cyan-400/10 flex items-center justify-center mb-4">
+                        <i data-lucide="shopping-cart" class="w-6 h-6 text-cyan-400"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Carrito Inteligente</h3>
+                    <p class="text-gray-400 text-sm">Persistencia en localStorage, cálculo automático de envíos y descuentos.</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-white/10">
+                    <div class="w-12 h-12 rounded-xl bg-green-400/10 flex items-center justify-center mb-4">
+                        <i data-lucide="credit-card" class="w-6 h-6 text-green-400"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Pagos Seguros</h3>
+                    <p class="text-gray-400 text-sm">Integración con Stripe, PayPal y MercadoPago. PCI compliant.</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-white/10">
+                    <div class="w-12 h-12 rounded-xl bg-purple-400/10 flex items-center justify-center mb-4">
+                        <i data-lucide="package" class="w-6 h-6 text-purple-400"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Gestión de Inventario</h3>
+                    <p class="text-gray-400 text-sm">Control de stock en tiempo real, alertas de productos bajos.</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-white/10">
+                    <div class="w-12 h-12 rounded-xl bg-orange-400/10 flex items-center justify-center mb-4">
+                        <i data-lucide="truck" class="w-6 h-6 text-orange-400"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Envíos</h3>
+                    <p class="text-gray-400 text-sm">Cálculo automático de envíos, tracking de pedidos y múltiples carriers.</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-white/10">
+                    <div class="w-12 h-12 rounded-xl bg-pink-400/10 flex items-center justify-center mb-4">
+                        <i data-lucide="users" class="w-6 h-6 text-pink-400"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Perfiles de Usuario</h3>
+                    <p class="text-gray-400 text-sm">Historial de compras, lista de deseos, direcciones guardadas.</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-white/10">
+                    <div class="w-12 h-12 rounded-xl bg-blue-400/10 flex items-center justify-center mb-4">
+                        <i data-lucide="search" class="w-6 h-6 text-blue-400"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Búsqueda Avanzada</h3>
+                    <p class="text-gray-400 text-sm">Filtros por categoría, precio, rating. Autocompletado inteligente.</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-white/10">
+                    <div class="w-12 h-12 rounded-xl bg-yellow-400/10 flex items-center justify-center mb-4">
+                        <i data-lucide="star" class="w-6 h-6 text-yellow-400"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Reviews</h3>
+                    <p class="text-gray-400 text-sm">Sistema de calificaciones, reseñas verificadas y moderación.</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-white/10">
+                    <div class="w-12 h-12 rounded-xl bg-red-400/10 flex items-center justify-center mb-4">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-red-400"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Seguridad</h3>
+                    <p class="text-gray-400 text-sm">JWT authentication, encryptación de datos, protección contra fraudes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shopping Experience Demo -->
+    <section id="tienda" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">Experiencia de Compra</h2>
+                <p class="text-gray-400">Simula el flujo completo desde el producto hasta el pago</p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Product Catalog -->
+                <div class="lg:col-span-2">
+                    <div class="glass rounded-3xl p-6 border border-white/10">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold">Catálogo de Productos</h3>
+                            <div class="flex gap-2">
+                                <select class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400">
+                                    <option>Todos</option>
+                                    <option>Electrónica</option>
+                                    <option>Ropa</option>
+                                    <option>Hogar</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-4" id="product-grid">
+                            <!-- Products rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shopping Cart -->
+                <div id="carrito">
+                    <div class="glass rounded-3xl p-6 border border-white/10 sticky top-24">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                            <i data-lucide="shopping-cart" class="w-5 h-5 text-cyan-400"></i>
+                            Carrito
+                            <span id="cart-total-items" class="ml-auto text-sm text-gray-400">0 items</span>
+                        </h3>
+
+                        <div id="cart-items" class="space-y-3 mb-4 max-h-64 overflow-y-auto">
+                            <p class="text-gray-500 text-center py-8">Tu carrito está vacío</p>
+                        </div>
+
+                        <div class="border-t border-white/10 pt-4 space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Subtotal</span>
+                                <span id="cart-subtotal">$0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Envío</span>
+                                <span id="cart-shipping">$0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Impuestos (16%)</span>
+                                <span id="cart-tax">$0.00</span>
+                            </div>
+                            <div class="flex justify-between font-bold text-lg pt-2 border-t border-white/10">
+                                <span>Total</span>
+                                <span id="cart-total" class="text-cyan-400">$0.00</span>
+                            </div>
+                        </div>
+
+                        <button id="checkout-btn" onclick="showCheckout()" class="w-full mt-6 py-4 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-xl font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Proceder al pago
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeCheckout()"></div>
+        <div class="absolute inset-4 md:inset-10 lg:inset-20 glass rounded-3xl border border-white/10 overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-white/10 flex items-center justify-between">
+                <h3 class="text-2xl font-bold">Checkout</h3>
+                <button onclick="closeCheckout()" class="p-2 hover:bg-white/10 rounded-lg">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Steps -->
+                    <div class="flex items-center justify-center gap-4 mb-8">
+                        <div class="checkout-step active flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-400/30 bg-cyan-400/10" data-step="1">
+                            <span class="w-6 h-6 rounded-full bg-cyan-400 text-black text-sm font-bold flex items-center justify-center">1</span>
+                            <span class="text-sm font-medium">Envío</span>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-600"></i>
+                        <div class="checkout-step flex items-center gap-2 px-4 py-2 rounded-full border border-white/10" data-step="2">
+                            <span class="w-6 h-6 rounded-full bg-white/10 text-sm font-bold flex items-center justify-center">2</span>
+                            <span class="text-sm font-medium text-gray-400">Pago</span>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-600"></i>
+                        <div class="checkout-step flex items-center gap-2 px-4 py-2 rounded-full border border-white/10" data-step="3">
+                            <span class="w-6 h-6 rounded-full bg-white/10 text-sm font-bold flex items-center justify-center">3</span>
+                            <span class="text-sm font-medium text-gray-400">Confirmación</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Shipping -->
+                    <div id="step-1" class="step-content">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Nombre completo</label>
+                                <input type="text" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400" placeholder="Juan Pérez">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Email</label>
+                                <input type="email" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400" placeholder="juan@email.com">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm text-gray-400 mb-2">Dirección</label>
+                                <input type="text" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400" placeholder="Calle Principal 123">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Ciudad</label>
+                                <input type="text" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400" placeholder="Ciudad de México">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Código Postal</label>
+                                <input type="text" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400" placeholder="01000">
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <h4 class="font-bold mb-4">Método de envío</h4>
+                            <div class="space-y-3">
+                                <label class="payment-method selected flex items-center justify-between p-4 rounded-xl border border-white/10 cursor-pointer">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="shipping" checked class="w-4 h-4 accent-cyan-400">
+                                        <div>
+                                            <div class="font-medium">Estándar</div>
+                                            <div class="text-sm text-gray-400">5-7 días hábiles</div>
+                                        </div>
+                                    </div>
+                                    <span class="font-bold">$99</span>
+                                </label>
+                                <label class="payment-method flex items-center justify-between p-4 rounded-xl border border-white/10 cursor-pointer">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="shipping" class="w-4 h-4 accent-cyan-400">
+                                        <div>
+                                            <div class="font-medium">Express</div>
+                                            <div class="text-sm text-gray-400">2-3 días hábiles</div>
+                                        </div>
+                                    </div>
+                                    <span class="font-bold">$199</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button onclick="nextStep(2)" class="w-full mt-8 py-4 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-xl font-bold text-white">
+                            Continuar al pago
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Payment -->
+                    <div id="step-2" class="step-content hidden">
+                        <div class="mb-6">
+                            <h4 class="font-bold mb-4">Método de pago</h4>
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <button class="payment-method selected p-4 rounded-xl border border-cyan-400/30 bg-cyan-400/10 flex flex-col items-center gap-2">
+                                    <i data-lucide="credit-card" class="w-8 h-8 text-cyan-400"></i>
+                                    <span class="text-sm">Tarjeta</span>
+                                </button>
+                                <button class="payment-method p-4 rounded-xl border border-white/10 flex flex-col items-center gap-2 hover:border-cyan-400/30">
+                                    <i data-lucide="wallet" class="w-8 h-8 text-gray-400"></i>
+                                    <span class="text-sm text-gray-400">PayPal</span>
+                                </button>
+                                <button class="payment-method p-4 rounded-xl border border-white/10 flex flex-col items-center gap-2 hover:border-cyan-400/30">
+                                    <i data-lucide="banknote" class="w-8 h-8 text-gray-400"></i>
+                                    <span class="text-sm text-gray-400">OXXO</span>
+                                </button>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm text-gray-400 mb-2">Número de tarjeta</label>
+                                    <div class="relative">
+                                        <i data-lucide="credit-card" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"></i>
+                                        <input type="text" class="w-full bg-white/5 border border-white/10 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-cyan-400" placeholder="4242 4242 4242 4242">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm text-gray-400 mb-2">Vencimiento</label>
+                                        <input type="text" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400" placeholder="MM/AA">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-400 mb-2">CVC</label>
+                                        <input type="text" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400" placeholder="123">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <button onclick="prevStep(1)" class="flex-1 py-4 glass rounded-xl font-bold border border-white/20">
+                                Atrás
+                            </button>
+                            <button onclick="nextStep(3)" class="flex-1 py-4 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-xl font-bold text-white">
+                                Pagar ahora
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Confirmation -->
+                    <div id="step-3" class="step-content hidden text-center">
+                        <div class="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
+                            <i data-lucide="check" class="w-10 h-10 text-green-400"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold mb-2">¡Pedido confirmado!</h4>
+                        <p class="text-gray-400 mb-6">Tu pedido #12345 ha sido procesado correctamente. Recibirás un email con los detalles.</p>
+                        
+                        <div class="glass rounded-xl p-6 border border-white/10 mb-6 text-left">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-400">Número de pedido</span>
+                                <span class="font-mono">#12345</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-400">Fecha estimada de entrega</span>
+                                <span>15 de febrero, 2024</span>
+                            </div>
+                            <div class="flex justify-between font-bold text-lg pt-2 border-t border-white/10">
+                                <span>Total pagado</span>
+                                <span class="text-cyan-400" id="confirmation-total">$0.00</span>
+                            </div>
+                        </div>
+
+                        <button onclick="closeCheckout(); clearCart();" class="w-full py-4 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-xl font-bold text-white">
+                            Seguir comprando
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <section id="admin" class="py-24 relative bg-black/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-cyan-400 text-sm uppercase tracking-widest font-medium">Panel de Administración</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold mt-4">Gestiona tu tienda</h2>
+            </div>
+
+            <div class="glass rounded-3xl border border-white/10 overflow-hidden">
+                <!-- Admin Header -->
+                <div class="flex items-center justify-between p-6 border-b border-white/10 bg-black/20">
+                    <div class="flex items-center gap-4">
+                        <button class="lg:hidden p-2 hover:bg-white/10 rounded-lg">
+                            <i data-lucide="menu" class="w-5 h-5"></i>
+                        </button>
+                        <h3 class="font-bold text-lg">Dashboard Admin</h3>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button class="p-2 hover:bg-white/10 rounded-lg relative">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+                                <span class="text-xs font-bold">AD</span>
+                            </div>
+                            <span class="hidden md:block text-sm">Admin</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col lg:flex-row">
+                    <!-- Admin Sidebar -->
+                    <div class="w-full lg:w-64 border-b lg:border-b-0 lg:border-r border-white/10 p-4">
+                        <nav class="space-y-1">
+                            <a href="#" class="admin-sidebar-item active flex items-center gap-3 px-4 py-3 rounded-lg text-sm">
+                                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="#" class="admin-sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-white">
+                                <i data-lucide="package" class="w-5 h-5"></i>
+                                <span>Productos</span>
+                            </a>
+                            <a href="#" class="admin-sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-white">
+                                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                                <span>Órdenes</span>
+                                <span class="ml-auto px-2 py-0.5 rounded-full bg-cyan-400 text-black text-xs font-bold">12</span>
+                            </a>
+                            <a href="#" class="admin-sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-white">
+                                <i data-lucide="users" class="w-5 h-5"></i>
+                                <span>Clientes</span>
+                            </a>
+                            <a href="#" class="admin-sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-white">
+                                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                                <span>Reportes</span>
+                            </a>
+                            <a href="#" class="admin-sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-white">
+                                <i data-lucide="settings" class="w-5 h-5"></i>
+                                <span>Configuración</span>
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Admin Content -->
+                    <div class="flex-1 p-6">
+                        <!-- Stats -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="glass rounded-xl p-4 border border-white/5">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs text-gray-400">Ventas hoy</span>
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-400"></i>
+                                </div>
+                                <div class="text-2xl font-bold">$12,450</div>
+                                <div class="text-xs text-green-400">+23% vs ayer</div>
+                            </div>
+                            <div class="glass rounded-xl p-4 border border-white/5">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs text-gray-400">Órdenes</span>
+                                    <i data-lucide="shopping-bag" class="w-4 h-4 text-cyan-400"></i>
+                                </div>
+                                <div class="text-2xl font-bold">48</div>
+                                <div class="text-xs text-cyan-400">12 pendientes</div>
+                            </div>
+                            <div class="glass rounded-xl p-4 border border-white/5">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs text-gray-400">Productos</span>
+                                    <i data-lucide="package" class="w-4 h-4 text-purple-400"></i>
+                                </div>
+                                <div class="text-2xl font-bold">156</div>
+                                <div class="text-xs text-red-400 stock-low">8 bajos en stock</div>
+                            </div>
+                            <div class="glass rounded-xl p-4 border border-white/5">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs text-gray-400">Clientes</span>
+                                    <i data-lucide="users" class="w-4 h-4 text-pink-400"></i>
+                                </div>
+                                <div class="text-2xl font-bold">1,234</div>
+                                <div class="text-xs text-green-400">+45 nuevos</div>
+                            </div>
+                        </div>
+
+                        <!-- Inventory Table -->
+                        <div class="glass rounded-xl border border-white/10 overflow-hidden">
+                            <div class="p-4 border-b border-white/10 flex items-center justify-between">
+                                <h4 class="font-bold">Inventario</h4>
+                                <button class="px-4 py-2 bg-cyan-400 text-black rounded-lg text-sm font-bold flex items-center gap-2">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    Agregar producto
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-white/5">
+                                        <tr>
+                                            <th class="text-left px-4 py-3 text-xs font-medium text-gray-400">Producto</th>
+                                            <th class="text-left px-4 py-3 text-xs font-medium text-gray-400">Categoría</th>
+                                            <th class="text-left px-4 py-3 text-xs font-medium text-gray-400">Precio</th>
+                                            <th class="text-left px-4 py-3 text-xs font-medium text-gray-400">Stock</th>
+                                            <th class="text-left px-4 py-3 text-xs font-medium text-gray-400">Estado</th>
+                                            <th class="text-left px-4 py-3 text-xs font-medium text-gray-400">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="inventory-row border-b border-white/5">
+                                            <td class="px-4 py-3">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center">
+                                                        <i data-lucide="headphones" class="w-5 h-5 text-cyan-400"></i>
+                                                    </div>
+                                                    <span class="font-medium">Auriculares Pro</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-400">Electrónica</td>
+                                            <td class="px-4 py-3 font-medium">$299</td>
+                                            <td class="px-4 py-3">45</td>
+                                            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">Activo</span></td>
+                                            <td class="px-4 py-3">
+                                                <button class="p-2 hover:bg-white/10 rounded-lg"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                <button class="p-2 hover:bg-white/10 rounded-lg text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr class="inventory-row border-b border-white/5">
+                                            <td class="px-4 py-3">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center">
+                                                        <i data-lucide="watch" class="w-5 h-5 text-purple-400"></i>
+                                                    </div>
+                                                    <span class="font-medium">Smart Watch</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-400">Electrónica</td>
+                                            <td class="px-4 py-3 font-medium">$199</td>
+                                            <td class="px-4 py-3 stock-low font-bold">3</td>
+                                            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 text-xs">Bajo stock</span></td>
+                                            <td class="px-4 py-3">
+                                                <button class="p-2 hover:bg-white/10 rounded-lg"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                <button class="p-2 hover:bg-white/10 rounded-lg text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr class="inventory-row border-b border-white/5">
+                                            <td class="px-4 py-3">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center">
+                                                        <i data-lucide="camera" class="w-5 h-5 text-pink-400"></i>
+                                                    </div>
+                                                    <span class="font-medium">Cámara 4K</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-400">Fotografía</td>
+                                            <td class="px-4 py-3 font-medium">$899</td>
+                                            <td class="px-4 py-3">12</td>
+                                            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">Activo</span></td>
+                                            <td class="px-4 py-3">
+                                                <button class="p-2 hover:bg-white/10 rounded-lg"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                <button class="p-2 hover:bg-white/10 rounded-lg text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr class="inventory-row">
+                                            <td class="px-4 py-3">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center">
+                                                        <i data-lucide="smartphone" class="w-5 h-5 text-green-400"></i>
+                                                    </div>
+                                                    <span class="font-medium">Phone 15</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-400">Electrónica</td>
+                                            <td class="px-4 py-3 font-medium">$999</td>
+                                            <td class="px-4 py-3">0</td>
+                                            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">Agotado</span></td>
+                                            <td class="px-4 py-3">
+                                                <button class="p-2 hover:bg-white/10 rounded-lg"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                <button class="p-2 hover:bg-white/10 rounded-lg text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section id="tech" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-cyan-400 text-sm uppercase tracking-widest font-medium">Stack Tecnológico</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold mt-4">MERN Stack completo</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass rounded-2xl p-6 border border-white/10 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-cyan-400/10 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="atom" class="w-8 h-8 text-cyan-400"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">React 18</h3>
+                    <p class="text-gray-400 text-sm">Hooks, Context API, Redux Toolkit</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-white/10 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-green-400/10 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="server" class="w-8 h-8 text-green-400"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Node.js</h3>
+                    <p class="text-gray-400 text-sm">Express, JWT, bcrypt, cors</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-white/10 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-green-600/10 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="database" class="w-8 h-8 text-green-600"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">MongoDB</h3>
+                    <p class="text-gray-400 text-sm">Mongoose, aggregation, indexing</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-white/10 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-blue-400/10 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="credit-card" class="w-8 h-8 text-blue-400"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Stripe</h3>
+                    <p class="text-gray-400 text-sm">Payments, webhooks, subscriptions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-24 relative bg-black/30">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="font-display text-4xl md:text-5xl font-bold mb-6">¿Listo para lanzar tu tienda?</h2>
+            <p class="text-gray-400 text-xl mb-8">
+                El código fuente incluye todo: frontend, backend, base de datos y configuración de pagos.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://github.com/tu-usuario/ecommerce-platform" target="_blank" class="px-8 py-4 bg-white text-black rounded-full font-bold hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="github" class="w-5 h-5"></i>
+                    <span>Ver en GitHub</span>
+                </a>
+                <a href="index.html" class="px-8 py-4 glass rounded-full font-bold hover:bg-white/10 transition-all border border-white/20 flex items-center justify-center gap-2">
+                    <i data-lucide="briefcase" class="w-5 h-5"></i>
+                    <span>Ver más proyectos</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5 text-center text-gray-600 text-sm">
+        <p>© 2024 E-Commerce Platform. Built with React, Node.js & MongoDB</p>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // ==========================================
+        // E-COMMERCE LOGIC
+        // ==========================================
+
+        const products = [
+            { id: 1, name: 'Auriculares Pro', price: 299, category: 'Electrónica', icon: 'headphones', color: 'cyan' },
+            { id: 2, name: 'Smart Watch', price: 199, category: 'Electrónica', icon: 'watch', color: 'purple' },
+            { id: 3, name: 'Cámara 4K', price: 899, category: 'Fotografía', icon: 'camera', color: 'pink' },
+            { id: 4, name: 'Phone 15', price: 999, category: 'Electrónica', icon: 'smartphone', color: 'green' },
+            { id: 5, name: 'Laptop Pro', price: 1299, category: 'Computación', icon: 'laptop', color: 'blue' },
+            { id: 6, name: 'Tablet Air', price: 599, category: 'Electrónica', icon: 'tablet', color: 'orange' }
+        ];
+
+        let cart = [];
+
+        // Render products
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = products.map(product => `
+                <div class="product-card glass rounded-xl p-4 border border-white/5">
+                    <div class="h-32 rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center mb-4">
+                        <i data-lucide="${product.icon}" class="w-12 h-12 text-${product.color}-400"></i>
+                    </div>
+                    <div class="flex items-start justify-between mb-2">
+                        <div>
+                            <h4 class="font-bold">${product.name}</h4>
+                            <p class="text-xs text-gray-400">${product.category}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-cyan-400 font-bold text-lg">$${product.price}</span>
+                        <button onclick="addToCart(${product.id})" class="add-to-cart-btn w-10 h-10 rounded-full bg-cyan-400 text-black flex items-center justify-center">
+                            <i data-lucide="plus" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // Add to cart
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            
+            updateCart();
+            
+            // Animation feedback
+            const btn = event.target.closest('button');
+            btn.innerHTML = '<i data-lucide="check" class="w-5 h-5"></i>';
+            lucide.createIcons();
+            setTimeout(() => {
+                btn.innerHTML = '<i data-lucide="plus" class="w-5 h-5"></i>';
+                lucide.createIcons();
+            }, 1000);
+        }
+
+        // Update cart UI
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotalItems = document.getElementById('cart-total-items');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            cartTotalItems.textContent = `${totalItems} items`;
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p class="text-gray-500 text-center py-8">Tu carrito está vacío</p>';
+                checkoutBtn.disabled = true;
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <div class="w-12 h-12 rounded-lg bg-gray-700 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="${item.icon}" class="w-6 h-6 text-${item.color}-400"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h5 class="font-medium text-sm truncate">${item.name}</h5>
+                            <p class="text-xs text-gray-400">$${item.price} x ${item.quantity}</p>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="p-1 hover:bg-white/10 rounded text-red-400">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `).join('');
+                checkoutBtn.disabled = false;
+                lucide.createIcons();
+            }
+            
+            updateCartTotals();
+        }
+
+        // Remove from cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
+        }
+
+        // Update cart totals
+        function updateCartTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = subtotal > 500 ? 0 : 99;
+            const tax = subtotal * 0.16;
+            const total = subtotal + shipping + tax;
+            
+            document.getElementById('cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cart-shipping').textContent = shipping === 0 ? 'Gratis' : `$${shipping.toFixed(2)}`;
+            document.getElementById('cart-tax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('confirmation-total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Clear cart
+        function clearCart() {
+            cart = [];
+            updateCart();
+        }
+
+        // Checkout modal
+        function showCheckout() {
+            document.getElementById('checkout-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+            // Reset steps
+            document.querySelectorAll('.step-content').forEach((el, i) => {
+                el.classList.toggle('hidden', i !== 0);
+            });
+            document.querySelectorAll('.checkout-step').forEach((el, i) => {
+                el.classList.toggle('active', i === 0);
+            });
+        }
+
+        // Checkout steps
+        function nextStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`step-${step}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.checkout-step').forEach((el, i) => {
+                el.classList.toggle('active', i < step);
+                el.querySelector('span:first-child').classList.toggle('bg-cyan-400', i < step);
+                el.querySelector('span:first-child').classList.toggle('text-black', i < step);
+                el.querySelector('span:first-child').classList.toggle('bg-white/10', i >= step);
+            });
+        }
+
+        function prevStep(step) {
+            nextStep(step);
+        }
+
+        // Payment method selection
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                if (this.querySelector('input[type="radio"]')) {
+                    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                    this.classList.add('selected');
+                }
+            });
+        });
+
+        // Initialize
+        renderProducts();
+    </script>
+</body>
+</html>

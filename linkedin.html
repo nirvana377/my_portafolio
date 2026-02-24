@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn | Tu Nombre</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #00d4ff 0%, #7000ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .blob {
+            position: fixed;
+            filter: blur(100px);
+            opacity: 0.2;
+            animation: float 15s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        .experience-card {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .experience-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: #00d4ff;
+            transform: translateX(5px);
+        }
+
+        .skill-badge {
+            transition: all 0.3s ease;
+        }
+
+        .skill-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(0, 212, 255, 0.3);
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        .recommendation-card {
+            transition: all 0.3s ease;
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -15px rgba(0, 212, 255, 0.2);
+        }
+
+        .connect-btn {
+            background: linear-gradient(135deg, #0a66c2 0%, #0077b5 100%);
+            transition: all 0.3s ease;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(10, 102, 194, 0.5);
+        }
+
+        .linkedin-blue {
+            color: #0a66c2;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.8s ease-out forwards;
+        }
+
+        .delay-100 { animation-delay: 0.1s; opacity: 0; }
+        .delay-200 { animation-delay: 0.2s; opacity: 0; }
+        .delay-300 { animation-delay: 0.3s; opacity: 0; }
+
+        .timeline-dot {
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="relative">
+
+    <!-- Background Effects -->
+    <div class="blob bg-primary w-[500px] h-[500px] rounded-full top-0 right-0 translate-x-1/3 -translate-y-1/3" style="background: #0077b5;"></div>
+    <div class="blob bg-secondary w-[500px] h-[500px] rounded-full bottom-0 left-0 -translate-x-1/3 translate-y-1/3 animation-delay-2000" style="background: #00d4ff;"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass border-b border-white/5 top-0">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="index.html" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
+                    <div class="p-2 rounded-full group-hover:bg-white/10 transition-all">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </div>
+                    <span class="font-display font-bold text-xl gradient-text">Portfolio</span>
+                </a>
+                
+                <div class="flex items-center gap-4">
+                    <span class="text-[#0a66c2] font-bold text-2xl">Linked</span>
+                    <span class="bg-[#0a66c2] text-white px-1.5 py-0.5 rounded font-bold text-xl">in</span>
+                    <a href="https://linkedin.com/in/tu-usuario" target="_blank" class="ml-4 flex items-center gap-2 px-4 py-2 glass rounded-full hover:bg-white/10 transition-all border border-white/20 text-sm">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Ver perfil</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-24 pb-20 px-4 max-w-5xl mx-auto">
+        
+        <!-- Profile Header Card -->
+        <div class="glass rounded-3xl overflow-hidden border border-white/10 mb-6 animate-slide-up">
+            <!-- Banner -->
+            <div class="h-56 bg-gradient-to-r from-[#0a66c2]/20 via-[#0077b5]/20 to-[#00d4ff]/20 relative overflow-hidden">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1517134191118-9d595e4c8c2b?w=1200&h=400&fit=crop')] bg-cover bg-center opacity-30"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent"></div>
+            </div>
+            
+            <!-- Profile Info -->
+            <div class="px-8 pb-8 relative">
+                <!-- Avatar -->
+                <div class="absolute -top-20 left-8">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-[#0a66c2] to-[#00d4ff] rounded-full blur-xl opacity-50"></div>
+                        <img src="https://github.com/tu-usuario.png" alt="Profile" class="relative w-40 h-40 rounded-full border-4 border-[#0a0a0a] object-cover" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Felix'">
+                        <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-[#0a0a0a]" title="Disponible para oportunidades"></div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-end pt-4 gap-3">
+                    <button class="p-3 glass rounded-full hover:bg-white/10 transition-all border border-white/20" title="Más opciones">
+                        <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+                    </button>
+                    <button class="p-3 glass rounded-full hover:bg-white/10 transition-all border border-white/20" title="Enviar mensaje">
+                        <i data-lucide="mail" class="w-5 h-5"></i>
+                    </button>
+                    <a href="https://linkedin.com/in/tu-usuario" target="_blank" class="connect-btn px-6 py-3 rounded-full font-bold text-white flex items-center gap-2">
+                        <i data-lucide="linkedin" class="w-5 h-5"></i>
+                        <span>Conectar</span>
+                    </a>
+                </div>
+
+                <!-- Name & Headline -->
+                <div class="mt-12">
+                    <h1 class="font-display text-3xl md:text-4xl font-bold mb-2">Tu Nombre Completo</h1>
+                    <p class="text-xl text-gray-300 mb-4">Full Stack Developer | Especialista en React & Node.js | Apasionado por la innovación tecnológica</p>
+                    
+                    <!-- Location & Info -->
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-4">
+                        <span class="flex items-center gap-1">
+                            <i data-lucide="map-pin" class="w-4 h-4"></i>
+                            Ciudad, País
+                        </span>
+                        <span class="flex items-center gap-1 linkedin-blue">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                            <a href="#" class="hover:underline">500+ contactos</a>
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <i data-lucide="link" class="w-4 h-4"></i>
+                            <a href="https://tuwebsite.com" class="linkedin-blue hover:underline">tuwebsite.com</a>
+                        </span>
+                    </div>
+
+                    <!-- Mutual Connections -->
+                    <div class="flex items-center gap-2 text-sm text-gray-400">
+                        <div class="flex -space-x-2">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=1" class="w-8 h-8 rounded-full border-2 border-[#0a0a0a] bg-gray-800">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=2" class="w-8 h-8 rounded-full border-2 border-[#0a0a0a] bg-gray-800">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=3" class="w-8 h-8 rounded-full border-2 border-[#0a0a0a] bg-gray-800">
+                        </div>
+                        <span><strong class="text-white">María García</strong>, <strong class="text-white">Carlos López</strong> y otros 45 contactos mutuos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="glass rounded-2xl p-8 border border-white/10 mb-6 animate-slide-up delay-100">
+            <h2 class="font-display text-xl font-bold mb-4 flex items-center gap-2">
+                <i data-lucide="user" class="text-[#0a66c2]"></i>
+                Acerca de
+            </h2>
+            <p class="text-gray-300 leading-relaxed mb-4">
+                Desarrollador Full Stack con más de 3 años de experiencia creando soluciones digitales escalables y de alto rendimiento. 
+                Especializado en el ecosistema React y Node.js, con fuerte enfoque en la experiencia de usuario y código limpio.
+            </p>
+            <p class="text-gray-300 leading-relaxed mb-4">
+                He liderado equipos de desarrollo en proyectos e-commerce y aplicaciones SaaS, logrando aumentar la eficiencia 
+                en un 40% y reducir los tiempos de carga en un 60%. Apasionado por el aprendizaje continuo y la contribución 
+                a la comunidad open source.
+            </p>
+            <p class="text-gray-300 leading-relaxed">
+                Busco oportunidades para colaborar en proyectos desafiantes que impacten positivamente en la vida de las personas, 
+                donde pueda aplicar mis habilidades técnicas y seguir creciendo profesionalmente.
+            </p>
+            
+            <button class="mt-4 text-gray-400 hover:text-white text-sm font-medium flex items-center gap-1 transition-colors" onclick="this.previousElementSibling.classList.toggle('line-clamp-3'); this.innerHTML = this.previousElementSibling.classList.contains('line-clamp-3') ? '...ver más' : 'Ver menos';">
+                <span>...ver más</span>
+                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Activity Section -->
+        <div class="glass rounded-2xl p-8 border border-white/10 mb-6 animate-slide-up delay-100">
+            <h2 class="font-display text-xl font-bold mb-4 flex items-center gap-2">
+                <i data-lucide="activity" class="text-[#0a66c2]"></i>
+                Actividad
+            </h2>
+            <div class="flex gap-4 mb-6 overflow-x-auto pb-2">
+                <button class="px-4 py-2 rounded-full bg-[#0a66c2]/20 text-[#0a66c2] border border-[#0a66c2]/30 text-sm font-medium whitespace-nowrap">Publicaciones</button>
+                <button class="px-4 py-2 rounded-full glass border border-white/10 text-gray-400 hover:text-white text-sm font-medium whitespace-nowrap transition-all">Comentarios</button>
+                <button class="px-4 py-2 rounded-full glass border border-white/10 text-gray-400 hover:text-white text-sm font-medium whitespace-nowrap transition-all">Vídeos</button>
+                <button class="px-4 py-2 rounded-full glass border border-white/10 text-gray-400 hover:text-white text-sm font-medium whitespace-nowrap transition-all">Imágenes</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="flex gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/10">
+                    <img src="https://github.com/tu-usuario.png" class="w-12 h-12 rounded-full object-cover flex-shrink-0" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Felix'">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-white">Tu Nombre</span>
+                            <span class="text-gray-500 text-sm">compartió una publicación • 2 días</span>
+                        </div>
+                        <p class="text-gray-300 text-sm mb-2">
+                            🚀 Emocionado de anunciar que acabo de certificarme como AWS Cloud Practitioner. 
+                            Un paso más en mi camino de especialización en arquitectura cloud. 
+                            #AWS #CloudComputing #NeverStopLearning
+                        </p>
+                        <div class="flex items-center gap-4 text-gray-500 text-sm">
+                            <span class="flex items-center gap-1"><i data-lucide="thumbs-up" class="w-4 h-4"></i> 124</span>
+                            <span class="flex items-center gap-1"><i data-lucide="message-square" class="w-4 h-4"></i> 18 comentarios</span>
+                            <span class="flex items-center gap-1"><i data-lucide="repeat" class="w-4 h-4"></i> 5 veces compartido</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="w-full mt-4 py-3 text-[#0a66c2] font-medium hover:bg-[#0a66c2]/10 rounded-xl transition-colors">
+                Ver toda la actividad
+            </button>
+        </div>
+
+        <!-- Experience Section -->
+        <div class="glass rounded-2xl p-8 border border-white/10 mb-6 animate-slide-up delay-200">
+            <h2 class="font-display text-xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="briefcase" class="text-[#0a66c2]"></i>
+                Experiencia
+            </h2>
+
+            <div class="space-y-8">
+                <!-- Job 1 -->
+                <div class="experience-card flex gap-4 p-4 rounded-xl -ml-4">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="building-2" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg text-white">Senior Full Stack Developer</h3>
+                        <p class="linkedin-blue font-medium">TechCorp Solutions</p>
+                        <p class="text-gray-500 text-sm mb-2">ene. 2022 - actualidad • 2 años</p>
+                        <p class="text-gray-500 text-sm mb-3">Ciudad, País • Remoto</p>
+                        <ul class="text-gray-300 text-sm space-y-2 list-disc list-inside">
+                            <li>Lideré el desarrollo de una plataforma SaaS que sirve a 10,000+ usuarios activos mensuales</li>
+                            <li>Implementé arquitectura de microservicios reduciendo los costos de infraestructura en un 35%</li>
+                            <li>Mentoricé a 3 desarrolladores junior, acelerando su onboarding en un 50%</li>
+                        </ul>
+                        <div class="flex gap-2 mt-3">
+                            <span class="px-3 py-1 rounded-full bg-white/5 text-xs text-gray-400 border border-white/10">React</span>
+                            <span class="px-3 py-1 rounded-full bg-white/5 text-xs text-gray-400 border border-white/10">Node.js</span>
+                            <span class="px-3 py-1 rounded-full bg-white/5 text-xs text-gray-400 border border-white/10">AWS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job 2 -->
+                <div class="experience-card flex gap-4 p-4 rounded-xl -ml-4">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="code-2" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg text-white">Full Stack Developer</h3>
+                        <p class="linkedin-blue font-medium">Startup Innovación</p>
+                        <p class="text-gray-500 text-sm mb-2">jun. 2020 - dic. 2021 • 1 año 7 meses</p>
+                        <p class="text-gray-500 text-sm mb-3">Ciudad, País</p>
+                        <ul class="text-gray-300 text-sm space-y-2 list-disc list-inside">
+                            <li>Desarrollé 5 aplicaciones web desde cero usando React y Django</li>
+                            <li>Optimizé el rendimiento del frontend mejorando el Lighthouse score de 45 a 95</li>
+                            <li>Colaboré en la implementación de CI/CD reduciendo el tiempo de deploy en un 70%</li>
+                        </ul>
+                        <div class="flex gap-2 mt-3">
+                            <span class="px-3 py-1 rounded-full bg-white/5 text-xs text-gray-400 border border-white/10">React</span>
+                            <span class="px-3 py-1 rounded-full bg-white/5 text-xs text-gray-400 border border-white/10">Django</span>
+                            <span class="px-3 py-1 rounded-full bg-white/5 text-xs text-gray-400 border border-white/10">PostgreSQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job 3 -->
+                <div class="experience-card flex gap-4 p-4 rounded-xl -ml-4">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-green-600 to-green-800 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="graduation-cap" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg text-white">Desarrollador Frontend Junior</h3>
+                        <p class="linkedin-blue font-medium">Agencia Digital Creativa</p>
+                        <p class="text-gray-500 text-sm mb-2">ene. 2019 - may. 2020 • 1 año 5 meses</p>
+                        <p class="text-gray-500 text-sm mb-3">Ciudad, País</p>
+                        <ul class="text-gray-300 text-sm space-y-2 list-disc list-inside">
+                            <li>Maqueté más de 20 sitios web responsivos usando HTML5, CSS3 y JavaScript</li>
+                            <li>Implementé diseños de Figma con precisión pixel-perfect</li>
+                            <li>Apoyé en la migración de jQuery a Vue.js en proyectos legacy</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Education Section -->
+        <div class="glass rounded-2xl p-8 border border-white/10 mb-6 animate-slide-up delay-200">
+            <h2 class="font-display text-xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="graduation-cap" class="text-[#0a66c2]"></i>
+                Educación
+            </h2>
+
+            <div class="space-y-6">
+                <div class="flex gap-4">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="university" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-white">Ingeniería en Sistemas Computacionales</h3>
+                        <p class="linkedin-blue font-medium">Universidad Nacional Tecnológica</p>
+                        <p class="text-gray-500 text-sm">2015 - 2019</p>
+                        <p class="text-gray-400 text-sm mt-2">Especialización en Desarrollo de Software y Bases de Datos</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-600 to-yellow-800 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="award" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-white">AWS Certified Cloud Practitioner</h3>
+                        <p class="linkedin-blue font-medium">Amazon Web Services</p>
+                        <p class="text-gray-500 text-sm">2024</p>
+                        <p class="text-gray-400 text-sm mt-2">Certificación en fundamentos de computación en la nube</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Section -->
+        <div class="glass rounded-2xl p-8 border border-white/10 mb-6 animate-slide-up delay-300">
+            <h2 class="font-display text-xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="zap" class="text-[#0a66c2]"></i>
+                Habilidades
+            </h2>
+
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Principales</h3>
+                <div class="flex flex-wrap gap-3">
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/20 text-white font-medium">React.js</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/20 text-white font-medium">Node.js</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/20 text-white font-medium">TypeScript</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/20 text-white font-medium">Next.js</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/20 text-white font-medium">Python</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/20 text-white font-medium">AWS</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/20 text-white font-medium">Docker</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/20 text-white font-medium">PostgreSQL</span>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Herramientas & Otros</h3>
+                <div class="flex flex-wrap gap-3">
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/10 text-gray-300 text-sm">Git</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/10 text-gray-300 text-sm">Figma</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/10 text-gray-300 text-sm">Jest</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/10 text-gray-300 text-sm">CI/CD</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/10 text-gray-300 text-sm">Agile/Scrum</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/10 text-gray-300 text-sm">GraphQL</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/10 text-gray-300 text-sm">MongoDB</span>
+                    <span class="skill-badge px-4 py-2 rounded-full glass border border-white/10 text-gray-300 text-sm">Redis</span>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-white/10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="trophy" class="w-5 h-5 text-yellow-500"></i>
+                        <span class="text-sm text-gray-300">15 validaciones de habilidades</span>
+                    </div>
+                    <button class="text-[#0a66c2] hover:underline text-sm font-medium">Demostrar habilidades</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="glass rounded-2xl p-8 border border-white/10 mb-6 animate-slide-up delay-300">
+            <h2 class="font-display text-xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="message-circle" class="text-[#0a66c2]"></i>
+                Recomendaciones
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="recommendation-card glass rounded-xl p-6 border border-white/10">
+                    <div class="flex items-start gap-4 mb-4">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Maria" class="w-12 h-12 rounded-full bg-gray-800">
+                        <div>
+                            <h4 class="font-bold text-white">María García</h4>
+                            <p class="text-sm text-gray-500">CTO en TechCorp Solutions</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed italic">
+                        "Trabajar con [Tu Nombre] fue una experiencia excepcional. Su capacidad técnica es sobresaliente, 
+                        pero lo que realmente destaca es su liderazgo y habilidad para mentorizar al equipo. 
+                        Entregó siempre a tiempo y con calidad excepcional."
+                    </p>
+                </div>
+
+                <div class="recommendation-card glass rounded-xl p-6 border border-white/10">
+                    <div class="flex items-start gap-4 mb-4">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos" class="w-12 h-12 rounded-full bg-gray-800">
+                        <div>
+                            <h4 class="font-bold text-white">Carlos López</h4>
+                            <p class="text-sm text-gray-500">Lead Developer en Startup Innovación</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed italic">
+                        "[Tu Nombre] tiene una capacidad única para resolver problemas complejos con soluciones elegantes. 
+                        Su conocimiento de React y arquitectura frontend es impresionante. 
+                        Cualquier equipo se beneficiaría enormemente de tenerlo."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interests -->
+        <div class="glass rounded-2xl p-8 border border-white/10 animate-slide-up delay-300">
+            <h2 class="font-display text-xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="heart" class="text-[#0a66c2]"></i>
+                Intereses
+            </h2>
+            
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="flex items-center gap-3 p-4 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/10">
+                    <div class="w-12 h-12 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                        <i data-lucide="cpu" class="w-6 h-6 text-blue-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">Inteligencia Artificial</h4>
+                        <p class="text-xs text-gray-500">12,000 seguidores</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 p-4 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/10">
+                    <div class="w-12 h-12 rounded-lg bg-green-600/20 flex items-center justify-center">
+                        <i data-lucide="leaf" class="w-6 h-6 text-green-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">Tech Sostenible</h4>
+                        <p class="text-xs text-gray-500">8,500 seguidores</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 p-4 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/10">
+                    <div class="w-12 h-12 rounded-lg bg-purple-600/20 flex items-center justify-center">
+                        <i data-lucide="users" class="w-6 h-6 text-purple-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">Liderazgo Tech</h4>
+                        <p class="text-xs text-gray-500">25,000 seguidores</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Sticky Footer CTA -->
+    <div class="fixed bottom-0 left-0 right-0 glass border-t border-white/10 p-4 z-40 md:hidden">
+        <a href="https://linkedin.com/in/tu-usuario" target="_blank" class="connect-btn w-full py-3 rounded-full font-bold text-white flex items-center justify-center gap-2">
+            <i data-lucide="linkedin" class="w-5 h-5"></i>
+            <span>Conectar en LinkedIn</span>
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-white/5 py-8 text-center text-gray-600 text-sm mb-20 md:mb-0">
+        <p>© 2024 Tu Nombre. Construyendo conexiones profesionales</p>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Animate numbers on load
+        const animateValue = (obj, start, end, duration) => {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        };
+
+        // Trigger animations
+        window.addEventListener('load', () => {
+            // Animate connection count if visible
+            const connectionStat = document.querySelector('.linkedin-blue.font-medium');
+            if(connectionStat && connectionStat.textContent.includes('contactos')) {
+                // Animation already handled by CSS
+            }
+        });
+    </script>
+</body>
+</html>
