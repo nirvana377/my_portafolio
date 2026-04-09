@@ -108,6 +108,92 @@
             opacity: 1;
             transform: translateY(0);
         }
+    
+        /* ═══════════════════════════════════════
+           RESPONSIVE GLOBAL - Mobile/Tablet/Desktop
+           ═══════════════════════════════════════ */
+
+        /* Evitar overflow horizontal en móvil */
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { max-width: 100%; overflow-x: hidden; }
+
+        /* Imágenes y videos fluidos */
+        img, video, iframe { max-width: 100%; height: auto; }
+
+        /* Texto base más pequeño en móvil */
+        @media (max-width: 640px) {
+            html { font-size: 15px; }
+
+            /* Nav altura reducida */
+            nav .h-20 { height: 3.5rem !important; }
+
+            /* Hero texto */
+            .text-5xl  { font-size: 2.2rem !important; line-height: 1.15 !important; }
+            .text-7xl  { font-size: 2.2rem !important; }
+            .text-8xl  { font-size: 2.2rem !important; }
+            .text-4xl  { font-size: 1.75rem !important; }
+            .text-3xl  { font-size: 1.4rem !important; }
+            .text-2xl  { font-size: 1.2rem !important; }
+            .text-xl   { font-size: 1rem !important; }
+
+            /* Padding de secciones */
+            .py-24 { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+            .py-16 { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+            .p-8   { padding: 1.25rem !important; }
+            .p-12  { padding: 1.25rem !important; }
+            .px-8  { padding-left: 1rem !important; padding-right: 1rem !important; }
+
+            /* Cards de proyecto - una columna */
+            .grid-cols-3, .lg\:grid-cols-3 { grid-template-columns: 1fr !important; }
+            .grid-cols-2, .md\:grid-cols-2 { grid-template-columns: 1fr !important; }
+
+            /* Íconos de tech más pequeños */
+            .w-16.h-16 { width: 3rem !important; height: 3rem !important; }
+            .w-8.h-8   { width: 1.4rem !important; height: 1.4rem !important; }
+
+            /* Formulario de contacto */
+            .md\:grid-cols-2 { grid-template-columns: 1fr !important; }
+
+            /* Botones full width en móvil */
+            .sm\:flex-row { flex-direction: column !important; }
+
+            /* Gap reducido */
+            .gap-8 { gap: 1.25rem !important; }
+            .gap-12 { gap: 2rem !important; }
+
+            /* Ocultar blobs en móvil para rendimiento */
+            #blob1, #blob2, #blob3 { opacity: 0.08 !important; }
+
+            /* Scroll indicator oculto en móvil */
+            .animate-bounce { display: none !important; }
+
+            /* Ajuste de la imagen de perfil en About */
+            .rounded-2xl img, img.rounded-2xl {
+                max-height: 280px;
+                object-position: top;
+            }
+
+            /* Fix sticky footer en páginas de redes */
+            .md\:hidden.fixed { position: relative !important; }
+        }
+
+        /* ── Tablet (641px - 1024px) ── */
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .text-8xl  { font-size: 4rem !important; }
+            .text-7xl  { font-size: 3.5rem !important; }
+            .lg\:grid-cols-3 { grid-template-columns: repeat(2, 1fr) !important; }
+            .py-24 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
+            #blob1, #blob2, #blob3 { opacity: 0.13 !important; }
+        }
+
+        /* ── Touch: quitar hover en móvil ── */
+        @media (hover: none) {
+            .project-card:hover { transform: none !important; box-shadow: none !important; }
+            .hover\:scale-110:hover { transform: none !important; }
+            .hover\:scale-105:hover { transform: none !important; }
+            .group:hover .group-hover\:opacity-100 { opacity: 1 !important; }
+        }
+
     </style>
 </head>
 <body class="antialiased">
@@ -160,7 +246,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section id="inicio" class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+    <section id="inicio" class="relative min-h-screen flex items-center justify-center pt-20 pb-8 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center">
                 <div class="reveal">
@@ -422,40 +508,40 @@
                         <div>
                             <div class="flex justify-between mb-2">
                                 <span class="text-white font-medium">React / Next.js</span>
-                                <span class="text-primary">95%</span>
+                                <span class="text-primary">75%</span>
                             </div>
                             <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div class="skill-bar h-full bg-gradient-to-r from-primary to-secondary rounded-full" style="width: 0%" data-width="95%"></div>
+                                <div class="skill-bar h-full bg-gradient-to-r from-primary to-secondary rounded-full" style="width: 0%" data-width="75%"></div>
                             </div>
                         </div>
                         
                         <div>
                             <div class="flex justify-between mb-2">
                                 <span class="text-white font-medium">Vue.js / Nuxt</span>
-                                <span class="text-primary">85%</span>
+                                <span class="text-primary">50%</span>
                             </div>
                             <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div class="skill-bar h-full bg-gradient-to-r from-primary to-secondary rounded-full" style="width: 0%" data-width="85%"></div>
+                                <div class="skill-bar h-full bg-gradient-to-r from-primary to-secondary rounded-full" style="width: 0%" data-width="50%"></div>
                             </div>
                         </div>
                         
                         <div>
                             <div class="flex justify-between mb-2">
                                 <span class="text-white font-medium">TypeScript</span>
-                                <span class="text-primary">90%</span>
+                                <span class="text-primary">70%</span>
                             </div>
                             <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div class="skill-bar h-full bg-gradient-to-r from-primary to-secondary rounded-full" style="width: 0%" data-width="90%"></div>
+                                <div class="skill-bar h-full bg-gradient-to-r from-primary to-secondary rounded-full" style="width: 0%" data-width="70%"></div>
                             </div>
                         </div>
                         
                         <div>
                             <div class="flex justify-between mb-2">
                                 <span class="text-white font-medium">Tailwind CSS</span>
-                                <span class="text-primary">95%</span>
+                                <span class="text-primary">67%</span>
                             </div>
                             <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div class="skill-bar h-full bg-gradient-to-r from-primary to-secondary rounded-full" style="width: 0%" data-width="95%"></div>
+                                <div class="skill-bar h-full bg-gradient-to-r from-primary to-secondary rounded-full" style="width: 0%" data-width="67%"></div>
                             </div>
                         </div>
                     </div>
@@ -468,40 +554,40 @@
                         <div>
                             <div class="flex justify-between mb-2">
                                 <span class="text-white font-medium">Node.js / Express</span>
-                                <span class="text-secondary">90%</span>
+                                <span class="text-secondary">50%</span>
                             </div>
                             <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div class="skill-bar h-full bg-gradient-to-r from-secondary to-primary rounded-full" style="width: 0%" data-width="90%"></div>
+                                <div class="skill-bar h-full bg-gradient-to-r from-secondary to-primary rounded-full" style="width: 0%" data-width="50%"></div>
                             </div>
                         </div>
                         
                         <div>
                             <div class="flex justify-between mb-2">
                                 <span class="text-white font-medium">Python / Django</span>
-                                <span class="text-secondary">80%</span>
+                                <span class="text-secondary">50%</span>
                             </div>
                             <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div class="skill-bar h-full bg-gradient-to-r from-secondary to-primary rounded-full" style="width: 0%" data-width="80%"></div>
+                                <div class="skill-bar h-full bg-gradient-to-r from-secondary to-primary rounded-full" style="width: 0%" data-width="50%"></div>
                             </div>
                         </div>
                         
                         <div>
                             <div class="flex justify-between mb-2">
                                 <span class="text-white font-medium">PostgreSQL / MongoDB</span>
-                                <span class="text-secondary">85%</span>
+                                <span class="text-secondary">55%</span>
                             </div>
                             <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div class="skill-bar h-full bg-gradient-to-r from-secondary to-primary rounded-full" style="width: 0%" data-width="85%"></div>
+                                <div class="skill-bar h-full bg-gradient-to-r from-secondary to-primary rounded-full" style="width: 0%" data-width="55%"></div>
                             </div>
                         </div>
                         
                         <div>
                             <div class="flex justify-between mb-2">
                                 <span class="text-white font-medium">Docker / AWS</span>
-                                <span class="text-secondary">75%</span>
+                                <span class="text-secondary">45%</span>
                             </div>
                             <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div class="skill-bar h-full bg-gradient-to-r from-secondary to-primary rounded-full" style="width: 0%" data-width="75%"></div>
+                                <div class="skill-bar h-full bg-gradient-to-r from-secondary to-primary rounded-full" style="width: 0%" data-width="45%"></div>
                             </div>
                         </div>
                     </div>
